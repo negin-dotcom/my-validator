@@ -1,9 +1,11 @@
-class Int:
-    pass 
+from typing import Any, Union
 
 
-class Str:
-    pass 
+
+# -------- Helper functions ------------------------
+def _require_int(value, name: str = "value") -> None:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise TypeError(f"{name} must be of type int, got {type(value).__name__}")
 
 
 def _require_number(value, name: str = "value") -> None:
@@ -11,7 +13,7 @@ def _require_number(value, name: str = "value") -> None:
         raise TypeError(f"{name} must be a number, got {type(value).__name__}")
 
 
-def _require_type(value, expected: type) -> None:
+def _require_type(value, expected: Union[type, tuple[type, ...]]) -> None:
     if not isinstance(value, expected):
         if isinstance(expected, tuple):
             names = " or ".join(t.__name__ for t in expected)
@@ -19,9 +21,12 @@ def _require_type(value, expected: type) -> None:
             names = expected.__name__
         raise TypeError(f"value must be of type {names}, got {type(value).__name__}")
 
+# --------------------------------------------------
+
 
 def min_length(value: str, minimum: int) -> bool:
     _require_type(value, str)
+    _require_int(minimum, "minimum")
     
     if minimum < 0:
         raise ValueError("minimum must be >= 0")
@@ -31,6 +36,7 @@ def min_length(value: str, minimum: int) -> bool:
 
 def max_length(value: str, maximum: int) -> bool:
     _require_type(value, str)
+    _require_int(maximum, "maximum")
         
     if maximum < 0:
         raise ValueError("maximum must be >= 0")
@@ -57,12 +63,12 @@ def is_numeric(value: str) -> bool:
 
 
 def in_range(value: float, low: float, high: float) -> bool:
-    _require_type(value, (int, float))
-    _require_type(low, (int, float))
-    _require_type(high, (int, float))
+    _require_number(value)
+    _require_number(low, "low")
+    _require_number(high, "high")
 
     if low > high:
-        raise TypeError(f"{high} must be equal to or greater than {low}")
+        raise ValueError("low must be <= high")
 
     return low <= value <= high
 
@@ -85,3 +91,7 @@ def is_non_positive(value: float) -> bool:
 def is_non_negative(value: float) -> bool:
     _require_number(value)
     return value >= 0
+
+
+def is_int(value: Any) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
