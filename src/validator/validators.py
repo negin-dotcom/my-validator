@@ -1,5 +1,5 @@
 from typing import Any, Union
-
+import re
 
 
 # -------- Helper functions ------------------------
@@ -95,3 +95,22 @@ def is_non_negative(value: float) -> bool:
 
 def is_int(value: Any) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
+
+# ====================================================================
+
+def _compile(pattern) -> re.Pattern:
+    if isinstance(pattern, re.Pattern):
+        return pattern 
+    if isinstance(pattern, str):
+        try:
+            return re.compile(pattern)
+        except re.error as e:
+            raise ValueError(f"invalid regex pattern: {e}") from e 
+    raise TypeError(
+        f"pattern must be of type str or re.Pattern, got {type(pattern).__name__}"
+    )
+
+
+def matches(value: str, pattern) -> bool:
+    _require_type(value, str)
+    return _compile(pattern).fullmatch(value) is not None

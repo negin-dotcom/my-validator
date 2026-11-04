@@ -1,6 +1,7 @@
-from validator.validators import is_non_negative, is_positive
+import re
+
+from validator.validators import matches
 
 
 if __name__ == "__main__":
-    assert is_positive(0) is False
-    assert is_non_negative(0) is True
+    assert matches("[abc", r"\d+") is False
