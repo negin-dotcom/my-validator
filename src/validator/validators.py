@@ -94,6 +94,7 @@ def is_non_negative(value: float) -> bool:
 
 
 def is_int(value: Any) -> bool:
+    _require_int(value)
     return isinstance(value, int) and not isinstance(value, bool)
 
 # ====================================================================
