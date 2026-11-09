@@ -13,13 +13,13 @@ def _require_number(value, name: str = "value") -> None:
         raise TypeError(f"{name} must be a number, got {type(value).__name__}")
 
 
-def _require_type(value, expected: Union[type, tuple[type, ...]]) -> None:
+def _require_type(value, expected: Union[type, tuple[type, ...]], name: str = "value") -> None:
     if not isinstance(value, expected):
         if isinstance(expected, tuple):
             names = " or ".join(t.__name__ for t in expected)
         else:
             names = expected.__name__
-        raise TypeError(f"value must be of type {names}, got {type(value).__name__}")
+        raise TypeError(f"{name} must be of type {names}, got {type(value).__name__}")
 
 # --------------------------------------------------
 
@@ -45,6 +45,7 @@ def max_length(value: str, maximum: int) -> bool:
 
 
 def not_empty(value: str) -> bool:
+    """Return True is value has at least one non-whitespace character."""
     _require_type(value, str)
 
     return bool(value.strip())
@@ -56,10 +57,11 @@ def is_alpha(value: str) -> bool:
     return value.isalpha()
 
 
+_NUMERIC = re.compile(r"[+-]?[0-9]+(\.[0-9]+)?")
+
 def is_numeric(value: str) -> bool:
     _require_type(value, str)
-
-    return value.isdecimal()
+    return _NUMERIC.fullmatch(value) is not None
 
 
 def in_range(value: float, low: float, high: float) -> bool:
@@ -94,7 +96,6 @@ def is_non_negative(value: float) -> bool:
 
 
 def is_int(value: Any) -> bool:
-    _require_int(value)
     return isinstance(value, int) and not isinstance(value, bool)
 
 # ====================================================================
@@ -115,3 +116,18 @@ def _compile(pattern) -> re.Pattern:
 def matches(value: str, pattern) -> bool:
     _require_type(value, str)
     return _compile(pattern).fullmatch(value) is not None
+
+
+_LOCAL_CHAR = r"[A-Za-z0-9_%+-]+"
+_LABEL = r"[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?"
+
+_EMAIL = re.compile(
+    rf"{_LOCAL_CHAR}(?:\.{_LOCAL_CHAR})*"
+    rf"@"
+    rf"{_LABEL}(?:\.{_LABEL})+"
+)
+
+def is_email(email: str) -> bool:
+    _require_type(email, str, "Email")
+
+    return _EMAIL.fullmatch(email) is not None
