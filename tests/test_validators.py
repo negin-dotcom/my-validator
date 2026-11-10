@@ -1,6 +1,7 @@
+import math
 import unittest 
 
-from validator.validators import is_email, is_int, matches, min_length
+from validator.validators import is_email, is_int, matches, max_length, min_length
 
 
 class TestRegexValidator(unittest.TestCase):
@@ -65,11 +66,35 @@ class TestMinLengthValidator(unittest.TestCase):
             min_length("abc", -1)
 
     def test_wrong_type_raises(self):
-        for value, minimum in [(10, 2), (10.5, 2), (10, 3.5), 
+        for value, minimum in [(10, 2), (10.5, 2), ("abc", 3.5), 
                                ("abc", "3"), ("abc", True)]:
             with self.subTest(value=value, minimum=minimum):
                 with self.assertRaises(TypeError):
                     min_length(value, minimum)
+
+
+
+class TestMaxLengthValidator(unittest.TestCase):
+    def test_accepts(self):
+        for value, maximum in [("abc", 3), ("abc", 4), ("abc", 5), ("", 0)]:
+            with self.subTest(value=value, maximum=maximum):
+                self.assertTrue(max_length(value, maximum))
+
+    def test_rejects(self):
+        for value, maximum in [("abc", 2), ("abc", 1), ("abc", 0)]:
+            with self.subTest(value=value, maximum=maximum):
+                self.assertFalse(max_length(value, maximum))
+
+    def test_wrong_type_raises(self):
+        for value, maximum in [(10, 3), (10.5, 3), ("abc", 3.5), 
+                               ("abc", "3"), ("abc", True)]:
+            with self.subTest(value=value, maximum=maximum):
+                with self.assertRaises(TypeError):
+                    max_length(value, maximum)
+
+    def test_maximum_negative_value(self):
+        with self.assertRaises(ValueError):
+            max_length("abc", -1)
 
 
 
