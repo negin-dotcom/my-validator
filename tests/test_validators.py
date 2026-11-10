@@ -1,7 +1,7 @@
 import math
 import unittest 
 
-from validator.validators import is_email, is_int, matches, max_length, min_length
+from validator.validators import in_range, is_email, is_int, matches, max_length, min_length
 
 
 class TestRegexValidator(unittest.TestCase):
@@ -96,6 +96,34 @@ class TestMaxLengthValidator(unittest.TestCase):
         with self.assertRaises(ValueError):
             max_length("abc", -1)
 
+
+class TestInRangeValidator(unittest.TestCase):
+    def test_valid_in_range(self):
+        for value, low, high in [(2, 0, 5), (10.2, 0, 20), (6, 0.3, 8), 
+                                 (9, 4, 12.6), (10.5, 8.7, 20.9), 
+                                 (4, 2, 4), (3, 3, 3), (math.inf, 0, math.inf),
+                                 (2, -math.inf, math.inf), (-2, -9, 0)]:
+            with self.subTest(value=value, low=low, high=high):
+                self.assertTrue(in_range(value, low, high))
+
+    def test_invalid_in_range(self):
+        for value, low, high in [(8, 0, 5), (4.5, 0, 3), (6, 2.5, 4), 
+                                 (8, 3, 7.6), (2.2, 2.5, 2.8), (math.inf, -math.inf, 0),
+                                 (-2, -3, -2.4), (5.001, 0, 5)]:
+            with self.subTest(value=value, low=low, high=high):
+                self.assertFalse(in_range(value, low, high))
+
+    def test_wrong_type_raises(self):
+        for value, low, high in [(3, 0, True), (3.2, False, 4), (True, 0, 5),
+                                 ("2", 0, 4), (2, "0", 4), (2, 0, "4"),
+                                 (2 + 2j, 0, 4), (None, -math.inf, math.inf)]:
+            with self.subTest(value=value, low=low, high=high):
+                with self.assertRaises(TypeError):
+                    in_range(value, low, high)
+
+    def test_low_greater_than_high(self):
+        with self.assertRaises(ValueError):
+            in_range(3, 5, 0)
 
 
 if __name__ == "__main__":
