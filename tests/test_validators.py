@@ -1,7 +1,7 @@
 import math
 import unittest 
 
-from validator.validators import in_range, is_email, is_int, matches, max_length, min_length
+from validator.validators import in_range, is_email, is_int, is_positive, matches, max_length, min_length
 
 
 class TestRegexValidator(unittest.TestCase):
@@ -124,6 +124,26 @@ class TestInRangeValidator(unittest.TestCase):
     def test_low_greater_than_high(self):
         with self.assertRaises(ValueError):
             in_range(3, 5, 0)
+
+
+
+class TestIsPositiveValidator(unittest.TestCase):
+    def test_valid_is_positive(self):
+        for value in [2, 1.6, math.inf]:
+            with self.subTest(value=value):
+                self.assertTrue(is_positive(value))
+
+    def test_invalid_is_positive(self):
+        for value in [-2, -1.7, -math.inf, 0, 0.0, -0.0, float("nan")]:
+            with self.subTest(value=value):
+                self.assertFalse(is_positive(value))
+
+    def test_wrong_type_raises(self):
+        for value in [None, True, False, "2", 4 + 2j, b"2"]:
+            with self.subTest(value=value):
+                with self.assertRaises(TypeError):
+                    is_positive(value)
+
 
 
 if __name__ == "__main__":
