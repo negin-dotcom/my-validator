@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, TypeGuard
 
 from validator._helpers import _require_number
 
@@ -34,5 +34,21 @@ def is_non_negative(value: float) -> bool:
     return value >= 0
 
 
-def is_int(value: Any) -> bool:
+def is_int(value: Any) -> TypeGuard[int]:
     return isinstance(value, int) and not isinstance(value, bool)
+
+
+def is_float(value: Any) -> TypeGuard[float]:
+    return isinstance(value, float)
+
+
+def is_number(value: Any) -> TypeGuard[int | float]:
+    return isinstance(value, (int, float)) and not isinstance(value, bool) 
+
+
+def is_str(value: Any) -> TypeGuard[str]:
+    return isinstance(value, str)
+
+
+def is_bool(value: Any) -> TypeGuard[bool]:
+    return isinstance(value, bool)
