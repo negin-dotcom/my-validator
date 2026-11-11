@@ -17,7 +17,7 @@ from .numbers import (
     is_int
 )
 
-from .collections import (
+from .containers import (
     is_list,
     is_tuple,
     is_dict,
