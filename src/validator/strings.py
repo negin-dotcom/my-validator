@@ -1,7 +1,7 @@
 import re
-from typing import Any, TypeGuard
+from typing import Any, Callable, TypeGuard
 
-from validator._helpers import _require_int, _require_type
+from validator._helpers import _require_callables, _require_int, _require_type
 
 
 _NUMERIC = re.compile(r"[+-]?[0-9]+(\.[0-9]+)?")
@@ -80,3 +80,43 @@ def is_email(email: str) -> bool:
 
 def is_str(value: Any) -> TypeGuard[str]:
     return isinstance(value, str)
+
+
+# ---------------------------------------------------------------
+
+Validator = Callable[[Any], bool]
+
+
+def min_length_of(n: int) -> Validator:
+    def check(value: Any) -> bool:
+        return min_length(value, n)
+    
+    return check
+
+def max_length_of(n: int) -> Validator:
+    def check(value: Any) -> bool:
+        return max_length(value, n)
+
+    return check
+
+def all_of(*validators: Validator) -> Validator:
+    _require_callables(validators)
+
+    def check(value: Any) -> bool:
+        for v in validators:
+            if not v(value):
+                return False 
+        return True
+
+    return check
+
+def any_of(*validators: Validator) -> Validator:
+    _require_callables(validators)
+
+    def check(value: Any) -> bool:
+        for v in validators:
+            if v(value):
+                return True 
+        return False
+
+    return check

@@ -18,3 +18,9 @@ def _require_type(value, expected: Union[type, tuple[type, ...]], name: str = "v
         else:
             names = expected.__name__
         raise TypeError(f"{name} must be of type {names}, got {type(value).__name__}")
+
+
+def _require_callables(validators: tuple) -> None:
+    for v in validators:
+        if not callable(v):
+            raise TypeError(f"validator must be callable, got {type(v).__name__}")
