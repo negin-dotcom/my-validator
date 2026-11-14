@@ -1,7 +1,15 @@
 import unittest
 from functools import partial
 
-from validator.strings import check_length, is_email, is_str, matches, max_length, min_length, not_empty
+from validator.strings import all_of, any_of, check_length, is_email, is_str, matches, max_length, min_length, not_empty
+
+
+def always_true(value):
+    return True 
+
+
+def always_false(value):
+    return False 
 
 
 class TestRegexValidator(unittest.TestCase):
@@ -111,7 +119,43 @@ class TestStrValidator(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "min_length or max_length"):
                     check_length(bad_function, 3)
 
-     
+
+class TestAllOfValidator(unittest.TestCase):
+    def test_empty_is_true(self):
+        self.assertTrue(all_of()("anything"))
+
+    def test_single_validator_matches_its_result(self):
+        self.assertTrue(all_of(always_true)("anything"))
+        self.assertFalse(all_of(always_false)("anything"))
+
+    def test_passes_when_all_validators_pass(self):
+        self.assertTrue(all_of(always_true, always_true)("anything"))
+
+    def test_fails_when_any_validator_fails(self):
+        for value_tuple in [(always_true, always_false), (always_false, always_false),
+                            (always_false, always_true)]:
+            with self.subTest(value_tuple=value_tuple):
+                self.assertFalse(all_of(*value_tuple)("anything"))
+
+
+class TestAnyOfValidator(unittest.TestCase):
+    def test_empty_is_false(self):
+        self.assertFalse(any_of()("anything"))
+
+    def test_single_validator_matches_its_result(self):
+        self.assertTrue(any_of(always_true)("anything"))
+        self.assertFalse(any_of(always_false)("anything"))
+
+    def test_fails_when_all_validators_fail(self):
+        self.assertFalse(any_of(always_false, always_false)("anything"))
+
+    def test_passes_when_any_validator_passes(self):
+        for value_tuple in [(always_true, always_false), (always_true, always_true),
+                             (always_false, always_true)]:
+            with self.subTest(value_tuple=value_tuple):
+                self.assertTrue(any_of(*value_tuple)("anything"))
+
+
 
 if __name__ == "__main__":
     unittest.main()
