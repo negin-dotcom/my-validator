@@ -11,6 +11,13 @@ def always_true(value):
 def always_false(value):
     return False 
 
+def spy(result, calls):
+    def check(value):
+        calls.append(value)
+        return result 
+
+    return check
+
 
 class TestRegexValidator(unittest.TestCase):
     def test_number_only_fullmatch(self):
@@ -91,10 +98,14 @@ class TestMaxLengthValidator(unittest.TestCase):
 
 class TestStrValidator(unittest.TestCase):
     def test_valid_str(self):
-        for value in ["", "a", "None", "0", "0.0", "-2", "{}", "()", "[]",
-                      '', 'a', 'None', '0', '0.0', '-2', '{}', '()', '[]']:
+        for value in ["", "a", "None", "0", "0.0", "-2", "{}", "()", "[]"]:
             with self.subTest(value=value):
                 self.assertTrue(is_str(value))
+
+    def test_invalid_str(self):
+        for value in [(), [], {}, None, True, False, 0, 0.0, -2, b"abc"]:
+            with self.subTest(value=value):
+                self.assertFalse(is_str(value))
 
     def test_rejects_not_empty(self):
         for value in ["", " "]:
@@ -113,8 +124,10 @@ class TestStrValidator(unittest.TestCase):
                 with self.assertRaises(TypeError):
                     not_empty(value)
 
+
+class TestCheckLengthValidator(unittest.TestCase):
     def test_check_length_with_other_than_min_length_and_max_length_raises(self):
-        for bad_function in [str, bool, int, float, partial(min_length, n=3)]:
+        for bad_function in [str, bool, int, float, partial(min_length, minimum=3)]:
             with self.subTest(bad_function=bad_function):
                 with self.assertRaisesRegex(ValueError, "min_length or max_length"):
                     check_length(bad_function, 3)
@@ -137,6 +150,20 @@ class TestAllOfValidator(unittest.TestCase):
             with self.subTest(value_tuple=value_tuple):
                 self.assertFalse(all_of(*value_tuple)("anything"))
 
+    def test_short_circuit_with_one_result(self):
+        calls = []
+        result = all_of(spy(False, calls), spy(True, calls))
+        self.assertFalse(result("anything"))
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls, ["anything"])
+
+    def test_runs_every_validator_when_none_short_circuits(self):
+        calls = []
+        result = all_of(spy(True, calls), spy(True, calls))
+        self.assertTrue(result("anything"))
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls, ["anything", "anything"])
+
 
 class TestAnyOfValidator(unittest.TestCase):
     def test_empty_is_false(self):
@@ -154,6 +181,20 @@ class TestAnyOfValidator(unittest.TestCase):
                              (always_false, always_true)]:
             with self.subTest(value_tuple=value_tuple):
                 self.assertTrue(any_of(*value_tuple)("anything"))
+
+    def test_short_circuit_with_one_result(self):
+        calls = []
+        result = any_of(spy(True, calls), spy(False, calls))
+        self.assertTrue(result("anything"))
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls, ["anything"])
+
+    def test_runs_every_validator_when_none_short_circuits(self):
+        calls = []
+        result = any_of(spy(False, calls), spy(False, calls))
+        self.assertFalse(result("anything"))
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls, ["anything", "anything"])
 
 
 
