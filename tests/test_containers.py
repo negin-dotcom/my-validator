@@ -2,7 +2,13 @@ from collections import OrderedDict
 import math
 import unittest
 
-from validator.containers import is_dict, is_list, is_none, is_set, is_tuple
+from validator.containers import (
+    is_dict, 
+    is_list, 
+    is_none, 
+    is_set, 
+    is_tuple
+)
 
 
 GUARDS = {

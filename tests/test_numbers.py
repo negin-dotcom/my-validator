@@ -4,7 +4,16 @@ import sys
 from decimal import Decimal
 from fractions import Fraction
 
-from validator.numbers import in_range, is_bool, is_float, is_int, is_negative, is_non_positive, is_number, is_positive
+from validator.numbers import (
+    in_range, 
+    is_bool, 
+    is_float, 
+    is_int, 
+    is_negative, 
+    is_non_positive, 
+    is_number, 
+    is_positive
+)
 
 
 FLOATS: list = [-0.0, 0.0, 1.2, 10*1e6, 2/3, 1*2.3, 10*1e-6,

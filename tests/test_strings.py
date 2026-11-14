@@ -1,7 +1,17 @@
 import unittest
 from functools import partial
 
-from validator.strings import all_of, any_of, check_length, is_email, is_str, matches, max_length, min_length, not_empty
+from validator.strings import (
+    all_of, 
+    any_of, 
+    check_length, 
+    is_email, 
+    is_str, 
+    matches, 
+    max_length, 
+    min_length, 
+    not_empty
+)
 
 
 def always_true(value):
