@@ -87,15 +87,12 @@ def is_str(value: Any) -> TypeGuard[str]:
 Validator = Callable[[Any], bool]
 
 
-def min_length_of(n: int) -> Validator:
-    def check(value: Any) -> bool:
-        return min_length(value, n)
+def check_length(length_func: callable, n: int) -> Validator:
+    if length_func not in (min_length, max_length):
+        raise ValueError(f"expected min_length or max_length, got {repr(length_func)}")
     
-    return check
-
-def max_length_of(n: int) -> Validator:
     def check(value: Any) -> bool:
-        return max_length(value, n)
+        return length_func(value, n)
 
     return check
 

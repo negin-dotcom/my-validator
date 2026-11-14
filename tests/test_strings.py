@@ -1,6 +1,7 @@
 import unittest
+from functools import partial
 
-from validator.strings import is_email, is_str, matches, max_length, min_length, not_empty
+from validator.strings import check_length, is_email, is_str, matches, max_length, min_length, not_empty
 
 
 class TestRegexValidator(unittest.TestCase):
@@ -104,7 +105,13 @@ class TestStrValidator(unittest.TestCase):
                 with self.assertRaises(TypeError):
                     not_empty(value)
 
-        
+    def test_check_length_with_other_than_min_length_and_max_length_raises(self):
+        for bad_function in [str, bool, int, float, partial(min_length, n=3)]:
+            with self.subTest(bad_function=bad_function):
+                with self.assertRaisesRegex(ValueError, "min_length or max_length"):
+                    check_length(bad_function, 3)
+
+     
 
 if __name__ == "__main__":
     unittest.main()
