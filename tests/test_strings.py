@@ -14,7 +14,6 @@ class TestRegexValidator(unittest.TestCase):
         self.assertTrue(matches("hey def", r"\w+\s+\w+"))
 
 
-
 class TestEmailValidator(unittest.TestCase):
     def test_valid_emails(self):
         for email in ["john@example.com", "john+-.doe@google.com"]:
@@ -58,7 +57,6 @@ class TestMinLengthValidator(unittest.TestCase):
                     min_length(value, minimum)
 
 
-
 class TestMaxLengthValidator(unittest.TestCase):
     def test_accepts(self):
         for value, maximum in [("abc", 3), ("abc", 4), ("abc", 5), ("", 0)]:
@@ -98,6 +96,13 @@ class TestStrValidator(unittest.TestCase):
         for value in ["a", "a b", " a", " a ", "a "]:
             with self.subTest(value=value):
                 self.assertTrue(not_empty(value))
+
+    def test_wrong_type_raises(self):
+        for value in [None, 0, 0.0, -1, 1 + 2j, (1,), {1}, 
+                      dict(a=1), [1], True, False]:
+            with self.subTest(value=value):
+                with self.assertRaises(TypeError):
+                    not_empty(value)
 
         
 
