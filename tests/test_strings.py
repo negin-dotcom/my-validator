@@ -1,6 +1,6 @@
 import unittest
 
-from validator.strings import is_email, matches, max_length, min_length
+from validator.strings import is_email, is_str, matches, max_length, min_length, not_empty
 
 
 class TestRegexValidator(unittest.TestCase):
@@ -82,6 +82,24 @@ class TestMaxLengthValidator(unittest.TestCase):
             max_length("abc", -1)
 
 
+class TestStrValidator(unittest.TestCase):
+    def test_valid_str(self):
+        for value in ["", "a", "None", "0", "0.0", "-2", "{}", "()", "[]",
+                      '', 'a', 'None', '0', '0.0', '-2', '{}', '()', '[]']:
+            with self.subTest(value=value):
+                self.assertTrue(is_str(value))
+
+    def test_rejects_not_empty(self):
+        for value in ["", " "]:
+            with self.subTest(value=value):
+                self.assertFalse(not_empty(value))
+
+    def test_accepts_not_empty(self):
+        for value in ["a", "a b", " a", " a ", "a "]:
+            with self.subTest(value=value):
+                self.assertTrue(not_empty(value))
+
+        
 
 if __name__ == "__main__":
     unittest.main()

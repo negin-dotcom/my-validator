@@ -1,4 +1,5 @@
 import re
+from typing import Any, TypeGuard
 
 from validator._helpers import _require_int, _require_type
 
@@ -75,3 +76,7 @@ def is_email(email: str) -> bool:
     _require_type(email, str, "Email")
 
     return _EMAIL.fullmatch(email) is not None
+
+
+def is_str(value: Any) -> TypeGuard[str]:
+    return isinstance(value, str)

@@ -46,9 +46,6 @@ def is_number(value: Any) -> TypeGuard[int | float]:
     return isinstance(value, (int, float)) and not isinstance(value, bool) 
 
 
-def is_str(value: Any) -> TypeGuard[str]:
-    return isinstance(value, str)
-
 
 def is_bool(value: Any) -> TypeGuard[bool]:
     return isinstance(value, bool)
