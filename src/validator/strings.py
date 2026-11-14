@@ -37,7 +37,7 @@ def max_length(value: str, maximum: int) -> bool:
 
 
 def not_empty(value: str) -> bool:
-    """Return True is value has at least one non-whitespace character."""
+    """Return True if value has at least one non-whitespace character."""
     _require_type(value, str)
 
     return bool(value.strip())
