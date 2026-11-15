@@ -5,7 +5,9 @@
 
 # Installation
 ```bash
-pip install validator
+git clone https://github.com/negin-dotcom/validator.git
+cd validator
+uv sync
 ```
 
 Requires Python 3.12 or newer.
