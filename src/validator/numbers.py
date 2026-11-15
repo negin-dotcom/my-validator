@@ -1,9 +1,11 @@
 from typing import Any, TypeGuard
 
-from validator._helpers import _require_number
+from validator._helpers import _require_bounds, _require_number
 from validator.combinators import Validator
+from validator.decorators import rule, rule_factory
 
 
+@rule("in_range", "{value} must be between {low} and {high}")
 def in_range(value: float, low: float, high: float) -> bool:
     _require_number(value)
     _require_bounds(low, high)
@@ -11,14 +13,7 @@ def in_range(value: float, low: float, high: float) -> bool:
     return low <= value <= high
 
 
-def _require_bounds(low: float, high: float) -> None:
-    _require_number(low, "low")
-    _require_number(high, "high")
-    
-    if low > high:
-        raise ValueError("low must be <= high")
-
-
+@rule_factory("in_range_of", "must be between {low} and {high}")
 def in_range_of(low: float, high: float) -> Validator:
     _require_bounds(low, high)
 
@@ -28,37 +23,45 @@ def in_range_of(low: float, high: float) -> Validator:
     return check
 
 
+@rule("positive", "{value} must be positive")
 def is_positive(value: float) -> bool:
     _require_number(value)
     return value > 0
 
 
+@rule("negative", "{value} must be negative")
 def is_negative(value: float) -> bool:
     _require_number(value)
     return value < 0
 
 
+@rule("non_positive", "{value} must be equal to or less than zero")
 def is_non_positive(value: float) -> bool:
     _require_number(value)
     return value <= 0
 
 
+@rule("non_negative", "{value} must be equal to or greater than zero")
 def is_non_negative(value: float) -> bool:
     _require_number(value)
     return value >= 0
 
 
+@rule("integer", "{value} must be an integer")
 def is_int(value: Any) -> TypeGuard[int]:
     return isinstance(value, int) and not isinstance(value, bool)
 
 
+@rule("float", "{value} must be a float")
 def is_float(value: Any) -> TypeGuard[float]:
     return isinstance(value, float)
 
 
+@rule("number", "{value} must be a number")
 def is_number(value: Any) -> TypeGuard[int | float]:
     return isinstance(value, (int, float)) and not isinstance(value, bool) 
 
 
+@rule("boolean", "{value} must be a boolean")
 def is_bool(value: Any) -> TypeGuard[bool]:
     return isinstance(value, bool)

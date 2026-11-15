@@ -1,10 +1,14 @@
-from typing import Any, Callable
+from typing import Any
 
-from validator._helpers import _require_callable, _require_callables
+from validator._helpers import (
+    Validator,
+    _describe, 
+    _require_callable, 
+    _require_callables
+)
+
 from validator.strings import max_length, min_length
 
-
-Validator = Callable[[Any], bool]
 
 
 def check_length(length_func: callable, n: int) -> Validator:
@@ -13,6 +17,9 @@ def check_length(length_func: callable, n: int) -> Validator:
     
     def check(value: Any) -> bool:
         return length_func(value, n)
+
+    check.code = length_func.code 
+    check.message = length_func.message.format(n=n)
 
     return check
 
@@ -25,6 +32,9 @@ def all_of(*validators: Validator) -> Validator:
                 return False 
         return True
 
+    check.code = "all_of"
+    check.message = "must satisfy all of: " + "; ".join(_describe(v) for v in validators)
+
     return check
 
 def any_of(*validators: Validator) -> Validator:
@@ -36,6 +46,9 @@ def any_of(*validators: Validator) -> Validator:
                 return True 
         return False
 
+    check.code = "any_of"
+    check.message = "must satisfy at least one of: " + "; ".join(_describe(v) for v in validators)
+    
     return check
 
 def not_(validator: Validator) -> Validator:
@@ -43,6 +56,9 @@ def not_(validator: Validator) -> Validator:
 
     def check(value: Any) -> bool:
         return not validator(value)
+
+    check.code = "not_"
+    check.message = "must not satisfy: " + _describe(validator)
 
     return check
 
@@ -54,5 +70,8 @@ def none_of(*validators: Validator) -> Validator:
             if v(value):
                 return False 
         return True 
+
+    check.code = "none_of"
+    check.message = "must satisfy none of: " + "; ".join(_describe(v) for v in validators)
 
     return check
