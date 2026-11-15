@@ -1,7 +1,7 @@
 import re
 from typing import Any, Callable, TypeGuard
 
-from validator._helpers import _require_callables, _require_int, _require_type
+from validator._helpers import _require_callable, _require_callables, _require_int, _require_type
 
 
 _NUMERIC = re.compile(r"[+-]?[0-9]+(\.[0-9]+)?")
@@ -115,5 +115,13 @@ def any_of(*validators: Validator) -> Validator:
             if v(value):
                 return True 
         return False
+
+    return check
+
+def not_(validator: Validator) -> Validator:
+    _require_callable(validator)
+
+    def check(value: Any) -> bool:
+        return not validator(value)
 
     return check

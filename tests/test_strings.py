@@ -1,6 +1,10 @@
 import unittest
 from functools import partial
+import math
+from fractions import Fraction
+from decimal import Decimal
 
+from validator.numbers import is_int
 from validator.strings import (
     all_of, 
     any_of, 
@@ -9,7 +13,8 @@ from validator.strings import (
     is_str, 
     matches, 
     max_length, 
-    min_length, 
+    min_length,
+    not_, 
     not_empty
 )
 
@@ -27,6 +32,10 @@ def spy(result, calls):
         return result 
 
     return check
+
+
+def raise_type_error(value):
+    raise TypeError("wrong type")
 
 
 class TestRegexValidator(unittest.TestCase):
@@ -205,6 +214,46 @@ class TestAnyOfValidator(unittest.TestCase):
         self.assertFalse(result("anything"))
         self.assertEqual(len(calls), 2)
         self.assertEqual(calls, ["anything", "anything"])
+
+
+class TestNotValidator(unittest.TestCase):
+    def test_flips_true_to_false(self):
+        self.assertFalse(not_(always_true)("anything"))
+
+    def test_flips_false_to_true(self):
+        self.assertTrue(not_(always_false)("anything"))
+
+    def test_raises_on_non_callable(self):
+        for validator in [True, False, None, "0.0", 0, 0.0, dict(a=1),
+                          {1}, (1,), [1], math.inf, float("nan"),
+                          Fraction(1, 3), Decimal("1.5")]:
+            with self.subTest(validator=validator):
+                with self.assertRaisesRegex(TypeError, "must be callable"):
+                    not_(validator) 
+
+    def test_odd_number_of_negations_is_the_same_as_first(self):
+        result = not_(always_true)
+        result_2 = not_(result)
+        result_3 = not_(result_2)
+
+        self.assertFalse(result("anything"))
+        self.assertFalse(result_3("anything"))    
+
+    def test_even_number_of_negations_is_the_flip_of_the_first(self):
+        result = not_(always_true)
+        result_2 = not_(result)
+
+        self.assertFalse(result("anything"))
+        self.assertTrue(result_2("anything"))
+
+    def test_type_error_propagates(self):
+        negated = not_(raise_type_error)
+        with self.assertRaises(TypeError):
+            negated("anything")
+
+    def test_with_real_validator(self):
+        self.assertTrue(not_(is_int)(1.0))
+        self.assertFalse(not_(is_int)(1))
 
 
 
