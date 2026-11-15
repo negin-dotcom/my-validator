@@ -4,7 +4,7 @@ import math
 from fractions import Fraction
 from decimal import Decimal
 
-from validator.numbers import is_int
+from validator.numbers import is_float, is_int
 from validator.strings import (
     all_of, 
     any_of, 
@@ -14,10 +14,14 @@ from validator.strings import (
     matches, 
     max_length, 
     min_length,
+    none_of,
     not_, 
     not_empty
 )
 
+NON_CALLABLES: list = [True, False, None, "0.0", 0, 0.0, dict(a=1),
+                       {1}, (1,), [1], math.inf, float("nan"),
+                       Fraction(1, 3), Decimal("1.5")]
 
 def always_true(value):
     return True 
@@ -224,9 +228,7 @@ class TestNotValidator(unittest.TestCase):
         self.assertTrue(not_(always_false)("anything"))
 
     def test_raises_on_non_callable(self):
-        for validator in [True, False, None, "0.0", 0, 0.0, dict(a=1),
-                          {1}, (1,), [1], math.inf, float("nan"),
-                          Fraction(1, 3), Decimal("1.5")]:
+        for validator in NON_CALLABLES:
             with self.subTest(validator=validator):
                 with self.assertRaisesRegex(TypeError, "must be callable"):
                     not_(validator) 
@@ -254,6 +256,58 @@ class TestNotValidator(unittest.TestCase):
     def test_with_real_validator(self):
         self.assertTrue(not_(is_int)(1.0))
         self.assertFalse(not_(is_int)(1))
+
+
+class TestNoneOfValidator(unittest.TestCase):
+    def test_empty_is_true(self):
+        self.assertTrue(none_of()("anything"))
+
+    def test_single_validator_behaves_like_not_(self):
+        self.assertTrue(none_of(always_false)("anything"))
+        self.assertTrue(not_(always_false)("anything"))
+
+        self.assertFalse(none_of(always_true)("anything"))
+        self.assertFalse(not_(always_true)("anything"))
+
+    def test_runs_all_validators_when_none_pass(self):
+        calls = []
+        result = none_of(spy(False, calls), spy(False, calls))
+        self.assertTrue(result("anything"))
+        self.assertEqual(len(calls), 2)
+
+    def test_short_circuit_when_all_is_true(self):
+        calls = []
+        result = none_of(spy(True, calls), spy(True, calls))
+        self.assertFalse(result("anything"))
+        self.assertEqual(len(calls), 1)
+
+    def test_runs_only_the_first_when_first_is_true(self):
+        calls = []
+        result = none_of(spy(True, calls), spy(False, calls))
+        self.assertFalse(result("anything"))
+        self.assertEqual(len(calls), 1)
+
+    def test_runs_until_true_is_found(self):
+        calls = []
+        result = none_of(spy(False, calls), spy(False, calls), spy(True, calls),
+                         spy(False, calls))
+        self.assertFalse(result("anything"))
+        self.assertEqual(len(calls), 3)
+
+    def test_raises_on_non_callable(self):
+        with self.assertRaisesRegex(TypeError, "must be callable"):
+            none_of(NON_CALLABLES) 
+
+    def test_type_error_propagates(self):
+        negated = none_of(raise_type_error)
+        with self.assertRaises(TypeError):
+            negated("anything")
+
+    def test_none_of_is_equal_to_not_any_of(self):
+        none_of_result = none_of(is_int, is_float)
+        not_any_of_result = not_(any_of(is_int, is_float))
+        self.assertEqual(none_of_result("anything"),
+                         not_any_of_result("anything"))
 
 
 
