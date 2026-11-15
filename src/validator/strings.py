@@ -125,3 +125,14 @@ def not_(validator: Validator) -> Validator:
         return not validator(value)
 
     return check
+
+def none_of(*validators: Validator) -> Validator:
+    _require_callables(validators)
+
+    def check(value: Any) -> bool:
+        for v in validators:
+            if v(value):
+                return False 
+        return True 
+
+    return check
