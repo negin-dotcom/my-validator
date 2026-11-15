@@ -23,45 +23,45 @@ def in_range_of(low: float, high: float) -> Validator:
     return check
 
 
-@rule("positive", "{value} must be positive")
+@rule("positive", "must be positive")
 def is_positive(value: float) -> bool:
     _require_number(value)
     return value > 0
 
 
-@rule("negative", "{value} must be negative")
+@rule("negative", "must be negative")
 def is_negative(value: float) -> bool:
     _require_number(value)
     return value < 0
 
 
-@rule("non_positive", "{value} must be equal to or less than zero")
+@rule("non_positive", "must be equal to or less than zero")
 def is_non_positive(value: float) -> bool:
     _require_number(value)
     return value <= 0
 
 
-@rule("non_negative", "{value} must be equal to or greater than zero")
+@rule("non_negative", "must be equal to or greater than zero")
 def is_non_negative(value: float) -> bool:
     _require_number(value)
     return value >= 0
 
 
-@rule("integer", "{value} must be an integer")
+@rule("integer", "must be an integer")
 def is_int(value: Any) -> TypeGuard[int]:
     return isinstance(value, int) and not isinstance(value, bool)
 
 
-@rule("float", "{value} must be a float")
+@rule("float", "must be a float")
 def is_float(value: Any) -> TypeGuard[float]:
     return isinstance(value, float)
 
 
-@rule("number", "{value} must be a number")
+@rule("number", "must be a number")
 def is_number(value: Any) -> TypeGuard[int | float]:
     return isinstance(value, (int, float)) and not isinstance(value, bool) 
 
 
-@rule("boolean", "{value} must be a boolean")
+@rule("boolean", "must be a boolean")
 def is_bool(value: Any) -> TypeGuard[bool]:
     return isinstance(value, bool)

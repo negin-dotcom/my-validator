@@ -2,7 +2,7 @@ import re
 from typing import Any, TypeGuard
 
 from validator._helpers import _require_int, _require_type
-from validator.decorators import rule
+from validator.decorators import rule, rule_factory
 
 
 _NUMERIC = re.compile(r"[+-]?[0-9]+(\.[0-9]+)?")
@@ -73,10 +73,18 @@ def _compile(pattern) -> re.Pattern:
     )
 
 
-@rule("match", "{value} must exactly match {pattern}")
+@rule("match", "must exactly match the required pattern")
 def matches(value: str, pattern) -> bool:
     _require_type(value, str)
     return _compile(pattern).fullmatch(value) is not None
+
+
+@rule_factory("match", "must match exactly the pattern {pattern}")
+def matches_of(pattern):
+    def check(value: str) -> bool:
+        return matches(value, pattern)
+
+    return check
 
 
 @rule("email", "must be an Email")
