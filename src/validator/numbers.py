@@ -1,17 +1,31 @@
 from typing import Any, TypeGuard
 
 from validator._helpers import _require_number
+from validator.combinators import Validator
 
 
 def in_range(value: float, low: float, high: float) -> bool:
     _require_number(value)
+    _require_bounds(low, high)
+
+    return low <= value <= high
+
+
+def _require_bounds(low: float, high: float) -> None:
     _require_number(low, "low")
     _require_number(high, "high")
-
+    
     if low > high:
         raise ValueError("low must be <= high")
 
-    return low <= value <= high
+
+def in_range_of(low: float, high: float) -> Validator:
+    _require_bounds(low, high)
+
+    def check(value: Any) -> bool:
+        return in_range(value, low, high)
+
+    return check
 
 
 def is_positive(value: float) -> bool:
