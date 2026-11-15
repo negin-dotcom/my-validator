@@ -1,4 +1,7 @@
-from typing import Union
+from typing import Any, Callable, Union
+
+
+Validator = Callable[[Any], bool]
 
 
 def _require_int(value, name: str = "value") -> None:
@@ -28,3 +31,15 @@ def _require_callables(validators: tuple) -> None:
 def _require_callable(validator: callable) -> None:
     if not callable(validator):
         raise TypeError(f"validator must be callable, got {type(validator).__name__}")
+
+
+def _require_bounds(low: float, high: float) -> None:
+    _require_number(low, "low")
+    _require_number(high, "high")
+    
+    if low > high:
+        raise ValueError("low must be <= high")
+
+
+def _describe(v: Validator) -> str:
+    return getattr(v, "message", getattr(v, "__name__", "a custom rule"))

@@ -3,13 +3,13 @@ from typing import Any
 from validator.combinators import Validator
 
 
-def validate(data: dict[str, Any], schema: dict[str, Validator]) -> list[str]:
-    failed = []
+def validate(data: dict[str, Any], schema: dict[str, Validator]) -> dict[str, str]:
+    errors = {}
 
     for field, validator in schema.items():
         if field not in data:
-            failed.append(field)
+            errors[field] = "is required"
         elif not validator(data[field]):
-            failed.append(field)
+            errors[field] = getattr(validator, "message", "failed validation")
 
-    return failed
+    return errors

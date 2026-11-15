@@ -2,6 +2,7 @@ import re
 from typing import Any, TypeGuard
 
 from validator._helpers import _require_int, _require_type
+from validator.decorators import rule
 
 
 _NUMERIC = re.compile(r"[+-]?[0-9]+(\.[0-9]+)?")
@@ -16,6 +17,7 @@ _EMAIL = re.compile(
 )
 
 
+@rule("min_length", "must be equal to or greater than {n}")
 def min_length(value: str, minimum: int) -> bool:
     _require_type(value, str)
     _require_int(minimum, "minimum")
@@ -26,6 +28,7 @@ def min_length(value: str, minimum: int) -> bool:
     return len(value) >= minimum
 
 
+@rule("max_length", "must be equal to or less than {n}")
 def max_length(value: str, maximum: int) -> bool:
     _require_type(value, str)
     _require_int(maximum, "maximum")
@@ -36,6 +39,7 @@ def max_length(value: str, maximum: int) -> bool:
     return len(value) <= maximum
 
 
+@rule("not_empty", "must not be empty")
 def not_empty(value: str) -> bool:
     """Return True if value has at least one non-whitespace character."""
     _require_type(value, str)
@@ -43,12 +47,14 @@ def not_empty(value: str) -> bool:
     return bool(value.strip())
 
 
+@rule("alpha", "must not be alphabetic")
 def is_alpha(value: str) -> bool:
     _require_type(value, str)
 
     return value.isalpha()
 
 
+@rule("numeric", "must not be numeric")
 def is_numeric(value: str) -> bool:
     _require_type(value, str)
     return _NUMERIC.fullmatch(value) is not None
@@ -67,16 +73,19 @@ def _compile(pattern) -> re.Pattern:
     )
 
 
+@rule("match", "{value} must exactly match {pattern}")
 def matches(value: str, pattern) -> bool:
     _require_type(value, str)
     return _compile(pattern).fullmatch(value) is not None
 
 
+@rule("email", "must be an Email")
 def is_email(email: str) -> bool:
     _require_type(email, str, "Email")
 
     return _EMAIL.fullmatch(email) is not None
 
 
+@rule("string", "must be a string")
 def is_str(value: Any) -> TypeGuard[str]:
     return isinstance(value, str)
