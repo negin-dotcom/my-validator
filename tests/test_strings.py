@@ -1,27 +1,30 @@
 import unittest
 
 from validator.strings import (
-    is_email, 
-    is_str, 
-    matches, 
-    max_length, 
+    is_email,
+    is_str,
+    matches,
+    max_length,
     min_length,
-    not_empty
+    not_empty,
 )
 
 
 def always_true(value):
-    return True 
+    return True
+
 
 def always_false(value):
-    return False 
+    return False
+
 
 def spy(result, calls):
     def check(value):
         calls.append(value)
-        return result 
+        return result
 
     return check
+
 
 def raise_type_error(value):
     raise TypeError("wrong type")
@@ -45,22 +48,24 @@ class TestEmailValidator(unittest.TestCase):
                 self.assertTrue(is_email(email))
 
     def test_invalid_emails(self):
-        for email in ["john@-@@example.com", "google.com", "john doe@example.com",
-                      "@example.com"]:
+        for email in [
+            "john@-@@example.com",
+            "google.com",
+            "john doe@example.com",
+            "@example.com",
+        ]:
             with self.subTest(email=email):
                 self.assertFalse(is_email(email))
 
     def test_wrong_type_emails(self):
         for email in [None, 1234, b"john.doe@example.com"]:
-            with self.subTest(email=email):
-                with self.assertRaises(TypeError):
-                    is_email(email)
+            with self.subTest(email=email), self.assertRaises(TypeError):
+                is_email(email)
 
 
 class TestMinLengthValidator(unittest.TestCase):
     def test_accepts(self):
-        for value, minimum in [("abc", 3), ("abc", 2), ("abc", 1), ("abc", 0),
-                               ("", 0)]:
+        for value, minimum in [("abc", 3), ("abc", 2), ("abc", 1), ("abc", 0), ("", 0)]:
             with self.subTest(value=value, minimum=minimum):
                 self.assertTrue(min_length(value, minimum))
 
@@ -74,11 +79,18 @@ class TestMinLengthValidator(unittest.TestCase):
             min_length("abc", -1)
 
     def test_wrong_type_raises(self):
-        for value, minimum in [(10, 2), (10.5, 2), ("abc", 3.5), 
-                               ("abc", "3"), ("abc", True)]:
-            with self.subTest(value=value, minimum=minimum):
-                with self.assertRaises(TypeError):
-                    min_length(value, minimum)
+        for value, minimum in [
+            (10, 2),
+            (10.5, 2),
+            ("abc", 3.5),
+            ("abc", "3"),
+            ("abc", True),
+        ]:
+            with (
+                self.subTest(value=value, minimum=minimum),
+                self.assertRaises(TypeError),
+            ):
+                min_length(value, minimum)
 
 
 class TestMaxLengthValidator(unittest.TestCase):
@@ -93,11 +105,18 @@ class TestMaxLengthValidator(unittest.TestCase):
                 self.assertFalse(max_length(value, maximum))
 
     def test_wrong_type_raises(self):
-        for value, maximum in [(10, 3), (10.5, 3), ("abc", 3.5), 
-                               ("abc", "3"), ("abc", True)]:
-            with self.subTest(value=value, maximum=maximum):
-                with self.assertRaises(TypeError):
-                    max_length(value, maximum)
+        for value, maximum in [
+            (10, 3),
+            (10.5, 3),
+            ("abc", 3.5),
+            ("abc", "3"),
+            ("abc", True),
+        ]:
+            with (
+                self.subTest(value=value, maximum=maximum),
+                self.assertRaises(TypeError),
+            ):
+                max_length(value, maximum)
 
     def test_maximum_negative_value(self):
         with self.assertRaises(ValueError):
@@ -126,12 +145,9 @@ class TestStrValidator(unittest.TestCase):
                 self.assertTrue(not_empty(value))
 
     def test_wrong_type_raises(self):
-        for value in [None, 0, 0.0, -1, 1 + 2j, (1,), {1}, 
-                      dict(a=1), [1], True, False]:
-            with self.subTest(value=value):
-                with self.assertRaises(TypeError):
-                    not_empty(value)
-
+        for value in [None, 0, 0.0, -1, 1 + 2j, (1,), {1}, dict(a=1), [1], True, False]:
+            with self.subTest(value=value), self.assertRaises(TypeError):
+                not_empty(value)
 
 
 if __name__ == "__main__":

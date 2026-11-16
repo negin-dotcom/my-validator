@@ -1,15 +1,8 @@
-from collections import OrderedDict
 import math
 import unittest
+from collections import OrderedDict
 
-from validator.containers import (
-    is_dict, 
-    is_list, 
-    is_none, 
-    is_set, 
-    is_tuple
-)
-
+from validator.containers import is_dict, is_list, is_none, is_set, is_tuple
 
 GUARDS = {
     "list": is_list,
@@ -45,7 +38,7 @@ class TestCollectionsValidator(unittest.TestCase):
         self.assertIs(is_set(set()), True)
 
     def test_single_element_tuple_needs_trailing_comma(self):
-        self.assertIs(is_tuple((1)), False)
+        self.assertIs(is_tuple(1), False)
         self.assertIs(is_tuple((1,)), True)
 
     def test_empty_curly_braces_are_a_dict_not_a_set(self):
@@ -53,8 +46,7 @@ class TestCollectionsValidator(unittest.TestCase):
         self.assertIs(is_set({}), False)
 
     def test_falsy_values_are_not_none(self):
-        for value in [(), {}, [], 0.0, 0, True, False, set(), 
-                      b"", ""]:
+        for value in [(), {}, [], 0.0, 0, True, False, set(), b"", ""]:
             with self.subTest(value=value):
                 self.assertIs(is_none(value), False)
 

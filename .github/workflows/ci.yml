@@ -26,5 +26,11 @@ jobs:
       - name: Install Dependencies 
         run: uv sync --locked 
 
+      - name: Lint (ruff)
+        run: uv run ruff check .
+
+      - name: Type check (mypy)
+        run: uv run mypy .
+
       - name: Run Tests
         run: uv run python -m unittest discover -s tests -v 
