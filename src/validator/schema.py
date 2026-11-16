@@ -8,6 +8,11 @@ from validator.combinators import Validator
 
 @dataclass(frozen=True)
 class Schema:
+    """Maps field names to the validator, each field must pass.
+    
+    Example:
+        Schema({"age": in_range_of(18, 35), "name": check_length(min_length, 2)})
+    """
     fields: Mapping[str, Validator]
 
     def __post_init__(self) -> None:
@@ -21,6 +26,12 @@ class Schema:
 
 
 def validate(data: dict[str, Any], schema: Schema) -> dict[str, str]:
+    """Check data against schema and return field -> error message.
+    
+    An empty dict means everything is ok.
+    Missing fields are reported as "is_required".
+    Extra fields are ignored.
+    """
     errors: dict[str, str] = {}
 
     for field, validator in schema.fields.items():
