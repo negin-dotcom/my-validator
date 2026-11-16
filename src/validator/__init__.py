@@ -11,7 +11,7 @@ from .numbers import (
     is_number,
     is_positive,
 )
-from .schema import validate
+from .schema import Schema, validate
 from .strings import (
     is_alpha,
     is_email,
@@ -52,4 +52,5 @@ __all__ = [
     "not_",
     "none_of",
     "validate",
+    "Schema",
 ]
