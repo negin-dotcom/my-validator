@@ -4,7 +4,6 @@ from typing import Any, TypeGuard
 from validator._helpers import _require_int, _require_type
 from validator.decorators import rule, rule_factory
 
-
 _NUMERIC = re.compile(r"[+-]?[0-9]+(\.[0-9]+)?")
 
 _LOCAL_CHAR = r"[A-Za-z0-9_%+-]+"

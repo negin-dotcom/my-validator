@@ -15,14 +15,7 @@ Requires Python 3.12 or newer.
 
 ## Sample Usage 
 ```python
-from validator import (
-    validate, 
-    all_of, 
-    is_str, 
-    check_length, 
-    min_length, 
-    in_range_of
-)
+from validator import validate, all_of, is_str, check_length, min_length, in_range_of
 
 
 schema = {
@@ -40,7 +33,7 @@ print(validate(data, schema))
 {
     "username": "must satisfy all of: ...",
     "age": "must be between 18 and 35",
-    "password": "is required"
+    "password": "is required",
 }
 ```
 

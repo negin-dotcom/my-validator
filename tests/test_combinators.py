@@ -1,24 +1,29 @@
-from decimal import Decimal
-from fractions import Fraction
 import math
 import unittest
+from decimal import Decimal
+from fractions import Fraction
 from functools import partial
 
-from validator.combinators import (
-    all_of, 
-    any_of, 
-    check_length, 
-    none_of, 
-    not_
-)
-
+from validator.combinators import all_of, any_of, check_length, none_of, not_
 from validator.numbers import is_float, is_int
 from validator.strings import min_length
 
-
-NON_CALLABLES: list = [True, False, None, "0.0", 0, 0.0, dict(a=1),
-                       {1}, (1,), [1], math.inf, float("nan"),
-                       Fraction(1, 3), Decimal("1.5")]
+NON_CALLABLES: list = [
+    True, 
+    False, 
+    None, 
+    "0.0",
+    0,
+    0.0, 
+    dict(a=1),
+    {1}, 
+    (1,), 
+    [1], 
+    math.inf, 
+    float("nan"),
+    Fraction(1, 3), 
+    Decimal("1.5")
+]
 
 def always_true(value):
     return True 
@@ -40,9 +45,11 @@ def raise_type_error(value):
 class TestCheckLengthValidator(unittest.TestCase):
     def test_check_length_with_other_than_min_length_and_max_length_raises(self):
         for bad_function in [str, bool, int, float, partial(min_length, minimum=3)]:
-            with self.subTest(bad_function=bad_function):
-                with self.assertRaisesRegex(ValueError, "min_length or max_length"):
-                    check_length(bad_function, 3)
+            with (
+                self.subTest(bad_function=bad_function),
+                self.assertRaisesRegex(ValueError, "min_length or max_length"),
+            ):
+                check_length(bad_function, 3)
 
 
 class TestAllOfValidator(unittest.TestCase):
@@ -57,8 +64,11 @@ class TestAllOfValidator(unittest.TestCase):
         self.assertTrue(all_of(always_true, always_true)("anything"))
 
     def test_fails_when_any_validator_fails(self):
-        for value_tuple in [(always_true, always_false), (always_false, always_false),
-                            (always_false, always_true)]:
+        for value_tuple in [
+            (always_true, always_false), 
+            (always_false, always_false),
+            (always_false, always_true)
+        ]:
             with self.subTest(value_tuple=value_tuple):
                 self.assertFalse(all_of(*value_tuple)("anything"))
 
@@ -89,8 +99,11 @@ class TestAnyOfValidator(unittest.TestCase):
         self.assertFalse(any_of(always_false, always_false)("anything"))
 
     def test_passes_when_any_validator_passes(self):
-        for value_tuple in [(always_true, always_false), (always_true, always_true),
-                             (always_false, always_true)]:
+        for value_tuple in [
+            (always_true, always_false), 
+            (always_true, always_true),
+            (always_false, always_true)
+        ]:
             with self.subTest(value_tuple=value_tuple):
                 self.assertTrue(any_of(*value_tuple)("anything"))
 
@@ -118,9 +131,11 @@ class TestNotValidator(unittest.TestCase):
 
     def test_raises_on_non_callable(self):
         for validator in NON_CALLABLES:
-            with self.subTest(validator=validator):
-                with self.assertRaisesRegex(TypeError, "must be callable"):
-                    not_(validator) 
+            with (
+                self.subTest(validator=validator), 
+                self.assertRaisesRegex(TypeError, "must be callable")
+            ):
+                not_(validator) 
 
     def test_odd_number_of_negations_is_the_same_as_first(self):
         result = not_(always_true)
@@ -178,8 +193,9 @@ class TestNoneOfValidator(unittest.TestCase):
 
     def test_runs_until_true_is_found(self):
         calls = []
-        result = none_of(spy(False, calls), spy(False, calls), spy(True, calls),
-                         spy(False, calls))
+        result = none_of(
+            spy(False, calls), spy(False, calls), spy(True, calls), spy(False, calls)
+        )
         self.assertFalse(result("anything"))
         self.assertEqual(len(calls), 3)
 
