@@ -11,6 +11,7 @@ uv sync
 ```
 
 Requires Python 3.12 or newer.
+Autocompletion is added.
 
 
 ## Sample Usage 
