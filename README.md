@@ -15,15 +15,16 @@ Requires Python 3.12 or newer.
 
 ## Sample Usage 
 ```python
-from validator import validate, all_of, is_str, check_length, min_length, in_range_of
+from validator import validate, all_of, is_str, check_length, min_length, in_range_of, Schema
 
 
-schema = {
+fields = {
     "username": all_of(is_str, check_length(min_length, 3)),
     "age": in_range_of(18, 35),
     "password": all_of(is_str, check_length(min_length, 8)),
 }
 
+schema = Schema(fields)
 data = {"username": "ab", "age": 12}
 
 print(validate(data, schema))
