@@ -29,7 +29,7 @@ def validate(data: dict[str, Any], schema: Schema) -> dict[str, str]:
     """Check data against schema and return field -> error message.
     
     An empty dict means everything is ok.
-    Missing fields are reported as "is_required".
+    Missing fields are reported as "is required".
     Extra fields are ignored.
     """
     errors: dict[str, str] = {}
