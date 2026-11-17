@@ -1,15 +1,17 @@
-from validator.combinators import all_of, check_length
-from validator.numbers import in_range_of
+from validator.custom import custom_validator
 from validator.schema import Schema, validate
-from validator.strings import is_str, min_length
 
-fields = {
-    "username": all_of(is_str, check_length(min_length, 3)),
-    "age": in_range_of(18, 35),
-    "password": all_of(is_str, check_length(min_length, 8)),
-}
+if __name__ == "__main__":
+    def _is_even(x):
+        return x % 2 == 0
 
-schema = Schema(fields)
-data = {"username": "ab", "age": 12}
+    is_even = custom_validator(_is_even, code="even", message="must be even")
 
-print(validate(data, schema))
+    fields = {
+        "age": is_even,
+    }
+
+    schema = Schema(fields)
+    data = {"age": 31}
+
+    print(validate(data, schema))
