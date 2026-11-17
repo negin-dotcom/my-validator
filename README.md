@@ -13,6 +13,8 @@ uv sync
 Requires Python 3.12 or newer.
 <br>
 Autocompletion is added.
+<br>
+Custom validator is added.
 
 
 ## Sample Usage 
