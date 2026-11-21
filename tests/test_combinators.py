@@ -222,5 +222,6 @@ class TestOptional(unittest.TestCase):
         self.assertTrue(wrapped.optional)
         self.assertFalse(getattr(is_int, "optional", False))
 
+
 if __name__ == "__main__":
     unittest.main()

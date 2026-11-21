@@ -164,5 +164,6 @@ class TestOptionalFields(unittest.TestCase):
 
         self.assertEqual(validate(data, schema), {"name": "is required"})
 
+
 if __name__ == "__main__":
     unittest.main()

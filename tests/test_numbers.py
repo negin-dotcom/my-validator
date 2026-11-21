@@ -238,6 +238,5 @@ class TestIsNonPositive(unittest.TestCase):
                 is_non_positive(value)
     
 
-
 if __name__ == "__main__":
     unittest.main()

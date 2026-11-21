@@ -1,6 +1,7 @@
 from .combinators import all_of, any_of, check_length, none_of, not_, optional
 from .containers import is_dict, is_list, is_none, is_set, is_tuple
 from .custom import custom_validator
+from .json_schema import from_json_schema
 from .numbers import (
     in_range,
     in_range_of,
@@ -58,4 +59,5 @@ __all__ = [
     "Schema",
     "custom_validator",
     "optional",
+    "from_json_schema",
 ]
