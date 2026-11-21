@@ -1,6 +1,28 @@
 [![CI](https://github.com/negin-dotcom/validator/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/negin-dotcom/validator/actions/workflows/ci.yml)
-# A small validator library written in Python. (still being developed)
-# Use it instead of writing validations by hand.
+# validator 
+
+A small validator library written in Python.
+<br>
+Use it instead of writing validations by hand.
+
+> Status: early development. The API may still change.
+
+This library is:
+- Simple and dependency-free.
+- Explicit about bad inputs.
+
+## Why
+Hand-written checks like "is this long enough?" or "is this a valid email?" are easy to get wrong, and every project ends up repeating them.
+<br>
+All validators are plain functions that return `True` or `False`. 
+<br>
+Passing the wrong type to a validator raises `TypeError` instead of simply returning False.
+
+
+## How it works
+- **Validators** are functions that take a value and return a bool (True or False): `is_str`, `is_int`, `is_float`, `is_list`, etc.
+- **Combinators** build bigger rules from small ones: `all_of`, `any_of`, etc.
+- **Schema + validate** apply a validator to each field and return a dictionary of `field -> message`. An empty dict means the data is valid.
 
 
 # Installation
@@ -12,9 +34,11 @@ uv sync
 
 Requires Python 3.12 or newer.
 <br>
-Autocompletion is added.
+Auto completion is added.
 <br>
 Custom validator is added.
+<br>
+Json schema support is added.
 
 
 ## Sample Usage 
