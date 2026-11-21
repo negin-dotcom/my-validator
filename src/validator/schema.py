@@ -36,14 +36,16 @@ def validate(data: dict[str, Any], schema: Schema) -> dict[str, str]:
     """Check data against schema and return field -> error message.
     
     An empty dict means everything is ok.
-    Missing fields are reported as "is required".
+    Missing fields are reported as "is required", unless they are optional.
+    A value of the wrong type is reported as "has an invalid type".
     Extra fields are ignored or reported depending on `schema.extra_fields`.
     """
     errors: dict[str, str] = {}
 
     for field, validator in schema.fields.items():
         if field not in data:
-            errors[field] = "is required"
+            if not getattr(validator, "optional", False):
+                errors[field] = "is required"
             continue 
 
         try:

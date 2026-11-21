@@ -1,4 +1,4 @@
-from .combinators import all_of, any_of, check_length, none_of, not_
+from .combinators import all_of, any_of, check_length, none_of, not_, optional
 from .containers import is_dict, is_list, is_none, is_set, is_tuple
 from .custom import custom_validator
 from .numbers import (
@@ -57,4 +57,5 @@ __all__ = [
     "validate",
     "Schema",
     "custom_validator",
+    "optional",
 ]

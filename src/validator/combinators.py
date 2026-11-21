@@ -1,3 +1,4 @@
+import functools
 from typing import Any, Protocol, cast
 
 from validator._helpers import (
@@ -12,6 +13,7 @@ from validator.strings import max_length, min_length
 class Rule(Protocol):
     code: str
     message: str
+    optional: bool
 
     def __call__(self, value: Any, /) -> bool: ...
 
@@ -19,8 +21,23 @@ class Rule(Protocol):
 class ParamRule(Protocol):
     code: str
     message: str
+    optional: bool
 
     def __call__(self, value: Any, /, *args: Any) -> bool: ...
+
+
+def optional(validator: Validator) -> Validator:
+    """'optional' must be the outermost wrapper."""
+    _require_callable(validator)
+
+    @functools.wraps(validator)
+    def check(value: Any) -> bool:
+        return validator(value)
+
+    rule = cast(Rule, check)
+    rule.optional = True 
+
+    return rule
 
 
 def check_length(length_func: ParamRule, n: int) -> Validator:

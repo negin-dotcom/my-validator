@@ -4,7 +4,7 @@ from decimal import Decimal
 from fractions import Fraction
 from functools import partial
 
-from validator.combinators import all_of, any_of, check_length, none_of, not_
+from validator.combinators import all_of, any_of, check_length, none_of, not_, optional
 from validator.numbers import is_float, is_int
 from validator.strings import min_length
 
@@ -215,6 +215,12 @@ class TestNoneOfValidator(unittest.TestCase):
                          not_any_of_result("anything"))
 
 
+class TestOptional(unittest.TestCase):
+    def test_does_not_mark_the_original_validator(self):
+        wrapped = optional(is_int)
+
+        self.assertTrue(wrapped.optional)
+        self.assertFalse(getattr(is_int, "optional", False))
 
 if __name__ == "__main__":
     unittest.main()
