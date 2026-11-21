@@ -1,6 +1,6 @@
 import unittest
 
-from validator.combinators import all_of, check_length
+from validator.combinators import all_of, check_length, optional
 from validator.numbers import in_range_of, is_int
 from validator.schema import Schema, validate
 from validator.strings import is_str, max_length, min_length
@@ -155,6 +155,14 @@ class TestExtraFieldsValidator(unittest.TestCase):
         self.assertEqual(
             validate(data, schema), {"nickname": "is required", "age": "is not allowed"}
         )
+
+class TestOptionalFields(unittest.TestCase):
+    def test_missing_optional_is_skipped_but_missing_required_is_not(self):
+        fields = {"name": is_str, "nickname": optional(is_str)}
+        schema = Schema(fields)
+        data = {}
+
+        self.assertEqual(validate(data, schema), {"name": "is required"})
 
 if __name__ == "__main__":
     unittest.main()
