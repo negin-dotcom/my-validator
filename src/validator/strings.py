@@ -46,14 +46,14 @@ def not_empty(value: str) -> bool:
     return bool(value.strip())
 
 
-@rule("alpha", "must not be alphabetic")
+@rule("alpha", "must be alphabetic")
 def is_alpha(value: str) -> bool:
     _require_type(value, str)
 
     return value.isalpha()
 
 
-@rule("numeric", "must not be numeric")
+@rule("numeric", "must be numeric")
 def is_numeric(value: str) -> bool:
     _require_type(value, str)
     return _NUMERIC.fullmatch(value) is not None

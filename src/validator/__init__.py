@@ -3,6 +3,7 @@ from .containers import is_dict, is_list, is_none, is_set, is_tuple
 from .custom import custom_validator
 from .numbers import (
     in_range,
+    in_range_of,
     is_bool,
     is_float,
     is_int,
@@ -34,6 +35,7 @@ __all__ = [
     "is_email",
     "is_str",
     "in_range",
+    "in_range_of",
     "is_positive",
     "is_negative",
     "is_non_positive",
