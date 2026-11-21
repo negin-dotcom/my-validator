@@ -44,4 +44,7 @@ print(validate(data, schema))
 
 Notes:
 - A `missing field` is reported as `is required`.
-- `Extra fields` in the data that are not in the schema are ignored.
+- A value of the wrong type is reported as `has an invalid type`.
+- Extra fields (keys in the data that are not in the schema) are ignored by
+default. Use `Schema(fields, extra_fields="forbid")` to report each of them
+as `is not allowed`.

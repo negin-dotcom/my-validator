@@ -124,7 +124,37 @@ class TestSchemaValidator(unittest.TestCase):
         data = {"username": "negin"}
 
         with self.assertRaises(ValueError):
-            validate(data, schema)            
+            validate(data, schema)
+
+
+class TestExtraFieldsValidator(unittest.TestCase):
+    def test_forbid_reports_every_extra_field(self):
+        fields = {"username": is_str}
+        schema = Schema(fields, extra_fields="forbid")
+        data = {"username": "negin", "nickname": "n", "age": 30}
+
+        self.assertEqual(
+            validate(data, schema),
+            {"nickname": "is not allowed", "age": "is not allowed"}
+        )
+
+    def test_invalid_type_with_extra_fields_as_forbid(self):
+        fields = {"username": is_str}
+        schema = Schema(fields, extra_fields="forbid")  
+        data = {"username": 1}
+
+        self.assertEqual(
+            validate(data, schema), {"username": "must be a string"}
+        )
+
+    def test_missing_field_plus_extra_fields_as_forbid(self):
+        fields = {"username": is_str, "nickname": is_str}
+        schema = Schema(fields, extra_fields="forbid")  
+        data = {"username": "negin", "age": 20}
+
+        self.assertEqual(
+            validate(data, schema), {"nickname": "is required", "age": "is not allowed"}
+        )
 
 if __name__ == "__main__":
     unittest.main()
