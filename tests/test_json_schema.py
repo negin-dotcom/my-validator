@@ -69,6 +69,45 @@ class TestJsonSchemaValidator(unittest.TestCase):
             {"age": "is required"}
         )
 
+    def test_without_additional_properties_in_json_schema(self):
+        json_schema = {
+            "type": "object",
+            "properties": {
+                "username": {"type": "string"},
+                "age": {"type": "integer"},
+            },
+            "additionalProperties": False,
+        }
+        data = {"username": "negin", "age": 20, "nickname": "n"}
+        self.assertEqual(
+            validate(data, from_json_schema(json_schema)), 
+            {"nickname": "is not allowed"}
+        )
+
+    def test_with_additional_properties_in_json_schema(self):
+        json_schema = {
+            "type": "object",
+            "properties": {
+                "username": {"type": "string"},
+                "age": {"type": "integer"},
+            },
+            "additionalProperties": True,
+        }
+        data = {"username": "negin", "age": 20, "nickname": "n"}
+        self.assertEqual(
+            validate(data, from_json_schema(json_schema)), {}
+        )
+
+    def test_wrong_type_extra_fields_raises(self):
+        data = {"username": "negin", "age": 20, "nickname": "n"}
+        for value in ["hey", {}, (), [], dict(a=1), b"abc", 0, 0.0, -1.5, 
+                      Decimal("1.5"), Fraction(1, 3), float("nan"), math.inf]:
+            with (
+                self.subTest(value=value),
+                self.assertRaisesRegex(ValueError, "unsupported extra_fields")
+            ):
+                validate(data, from_json_schema(self.json_schema, extra_fields=value))
+
 
 if __name__ == "__main__":
     unittest.main()
