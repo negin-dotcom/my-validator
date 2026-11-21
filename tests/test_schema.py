@@ -9,6 +9,9 @@ from validator.strings import is_str, max_length, min_length
 def raises_type_error(value):
     raise TypeError("wrong type")
 
+def raises_value_error(value):
+    raise ValueError("bad configuration")
+
 
 class TestSchemaValidator(unittest.TestCase):
     def setUp(self):
@@ -106,14 +109,22 @@ class TestSchemaValidator(unittest.TestCase):
             {"username": self.schema.fields["username"].message}
         )
     
-    def test_error_that_propagates(self):
+    def test_type_error_reported_as_invalid_type(self):
         fields = {"username": raises_type_error}
         schema = Schema(fields)
         data = {"username": "negin"}
 
-        with self.assertRaises(TypeError):
-            validate(data, schema)
-            
+        self.assertEqual(
+            validate(data, schema), {"username": "has an invalid type"}
+        )
+
+    def test_error_that_propagates(self):
+        fields = {"username": raises_value_error}
+        schema = Schema(fields)
+        data = {"username": "negin"}
+
+        with self.assertRaises(ValueError):
+            validate(data, schema)            
 
 if __name__ == "__main__":
     unittest.main()

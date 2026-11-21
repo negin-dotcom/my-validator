@@ -1,7 +1,9 @@
 from .combinators import all_of, any_of, check_length, none_of, not_
 from .containers import is_dict, is_list, is_none, is_set, is_tuple
+from .custom import custom_validator
 from .numbers import (
     in_range,
+    in_range_of,
     is_bool,
     is_float,
     is_int,
@@ -22,7 +24,6 @@ from .strings import (
     min_length,
     not_empty,
 )
-from .custom import custom_validator
 
 __all__ = [
     "min_length",
@@ -34,6 +35,7 @@ __all__ = [
     "is_email",
     "is_str",
     "in_range",
+    "in_range_of",
     "is_positive",
     "is_negative",
     "is_non_positive",

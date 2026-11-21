@@ -37,7 +37,15 @@ def validate(data: dict[str, Any], schema: Schema) -> dict[str, str]:
     for field, validator in schema.fields.items():
         if field not in data:
             errors[field] = "is required"
-        elif not validator(data[field]):
+            continue 
+
+        try:
+            passed = validator(data[field])
+        except TypeError:
+            errors[field] = "has an invalid type"
+            continue
+
+        if not passed:
             errors[field] = getattr(validator, "message", "failed validation")
 
     return errors
