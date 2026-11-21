@@ -42,3 +42,7 @@ class TestCustomValidator(unittest.TestCase):
         f = custom_validator(is_positive_even)
         self.assertEqual(f.code, "is_positive_even")
         self.assertIn("is_positive_even", f.message)
+
+
+if __name__ == "__main__":
+    unittest.main()

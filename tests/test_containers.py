@@ -57,6 +57,5 @@ class TestCollectionsValidator(unittest.TestCase):
         self.assertIs(is_dict(OrderedDict()), True)
 
 
-
 if __name__ == "__main__":
     unittest.main()
